@@ -61,10 +61,7 @@ class CaptureAction extends BaseApiAwareAction implements ActionInterface
         throw new HttpPostRedirect($this->api->getApiEndpoint(), $details);
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function supports($request)
+    public function supports($request): bool
     {
         return
             $request instanceof Capture &&
