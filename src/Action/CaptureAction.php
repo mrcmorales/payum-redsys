@@ -45,11 +45,11 @@ class CaptureAction extends BaseApiAwareAction implements ActionInterface
 
         if (false === $postData['Ds_Merchant_UrlOK'] && $request->getToken()) {
             $postData['Ds_Merchant_UrlOK'] = $request->getToken()
-                ->getTargetUrl();
+                ->getAfterUrl();
         }
         if (false === $postData['Ds_Merchant_UrlKO'] && $request->getToken()) {
             $postData['Ds_Merchant_UrlKO'] = $request->getToken()
-                ->getTargetUrl();
+                ->getAfterUrl();
         }
 
         $details['Ds_Merchant_TransactionType'] = $this->api::TRANSACTIONTYPE_AUTHORIZATION;
