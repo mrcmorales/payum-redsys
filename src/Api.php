@@ -129,7 +129,7 @@ class Api
             $notification["Ds_MerchantParameters"]
         );
 
-        return $signedResponse === $notification['Ds_Signature'];
+        return $signedResponse == $notification['Ds_Signature'];
     }
 
     public function sign(array $params): string
@@ -152,31 +152,8 @@ class Api
     {
         return $this->encodeBase64(json_encode($params));
     }
-    
-    /**
-     * @param array $fields
-     *
-     * @return array
-     */
-    protected function doRequest($method, array $fields)
-    {
-        $headers = [];
 
-        $request = $this->messageFactory->createRequest(
-            $method,
-            $this->getApiEndpoint(),
-            $headers,
-            http_build_query($fields)
-        );
 
-        $response = $this->client->send($request);
-
-        if (false == ($response->getStatusCode() >= 200 && $response->getStatusCode() < 300)) {
-            throw HttpException::factory($request, $response);
-        }
-
-        return $response;
-    }
 
     private function createMerchantSignatureNotify(string $key, string $data): string
     {

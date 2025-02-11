@@ -51,6 +51,8 @@ class NotifyAction extends BaseApiAwareAction implements ActionInterface
             $httpRequest->request
         );
 
+        $request->setModel($model);
+
         throw new HttpResponse('', 200);
     }
 
