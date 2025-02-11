@@ -43,11 +43,12 @@ class CaptureAction extends BaseApiAwareAction implements ActionInterface
             'Ds_Merchant_MerchantURL',
         ));
 
-        if (false === $postData['Ds_Merchant_UrlOK'] && $request->getToken()) {
+        if (!$postData['Ds_Merchant_UrlOK'] && $request->getToken()) {
             $postData['Ds_Merchant_UrlOK'] = $request->getToken()
                 ->getAfterUrl();
         }
-        if (false === $postData['Ds_Merchant_UrlKO'] && $request->getToken()) {
+
+        if (!$postData['Ds_Merchant_UrlKO'] && $request->getToken()) {
             $postData['Ds_Merchant_UrlKO'] = $request->getToken()
                 ->getAfterUrl();
         }
