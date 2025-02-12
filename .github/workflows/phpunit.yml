@@ -13,15 +13,17 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
       - name: Set up PHP
         uses: shivammathur/setup-php@v2
         with:
           php-version: '8.0'
 #          extensions: mbstring, curl, openssl, json
-          coverage: none
+#          coverage: none
 
-      - name: Check current working directory
-        run: ls -lh
+
 
       - name: Install dependencies
         run: |
