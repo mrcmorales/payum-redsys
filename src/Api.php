@@ -124,10 +124,10 @@ class Api
         $notification = ArrayObject::ensureArrayObject($notification);
         $notification->validateNotEmpty('Ds_Signature');
         $notification->validateNotEmpty('Ds_MerchantParameters');
-        $signedResponse = $this->createMerchantSignatureNotify(
-            $this->options['secret_key'],
-            $notification["Ds_MerchantParameters"]
-        );
+        $data = $notification["Ds_MerchantParameters"];
+
+        $key = $this->options['secret_key'];
+        $signedResponse = $this->createMerchantSignatureNotify($key, $data);
 
         return $signedResponse == $notification['Ds_Signature'];
     }

@@ -10,10 +10,14 @@ use Payum\Core\Reply\HttpPostRedirect;
 use Payum\Core\Request\Capture;
 use Payum\Core\Exception\RequestNotSupportedException;
 use MrcMorales\Payum\Redsys\Api;
+use Payum\Core\Security\GenericTokenFactoryAwareInterface;
+use Payum\Core\Security\GenericTokenFactoryAwareTrait;
 
-class CaptureAction extends BaseApiAwareAction implements ActionInterface
+class CaptureAction extends BaseApiAwareAction implements ActionInterface, GenericTokenFactoryAwareInterface
 {
     use GatewayAwareTrait;
+    use GenericTokenFactoryAwareTrait;
+
 
     /** @var Api */
     protected $api;
@@ -32,7 +36,11 @@ class CaptureAction extends BaseApiAwareAction implements ActionInterface
         $postData = ArrayObject::ensureArrayObject($request->getModel());
 
         if (empty($postData['Ds_Merchant_MerchantURL']) && $request->getToken()) {
-            $postData['Ds_Merchant_MerchantURL'] = $request->getToken()->getTargetUrl();
+            $notifyToken = $this->tokenFactory->createNotifyToken(
+                $request->getToken()->getGatewayName(),
+                $request->getToken()->getDetails()
+            );
+            $postData['Ds_Merchant_MerchantURL'] = $notifyToken->getTargetUrl();
         }
 
         $postData->validatedKeysSet(array(
