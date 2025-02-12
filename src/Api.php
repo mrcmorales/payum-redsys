@@ -19,8 +19,6 @@ class Api
     const DS_RESPONSE_CANCELED = '0184';
     const DS_RESPONSE_USER_CANCELED = '9915';
 
-    const TRANSACTIONTYPE_AUTHORIZATION = 0;
-
 
     /**
      * Currency codes to the values the bank

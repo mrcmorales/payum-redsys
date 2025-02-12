@@ -3,6 +3,7 @@
 namespace MrcMorales\Payum\Redsys\Action;
 
 use MrcMorales\Payum\Redsys\Action\Api\BaseApiAwareAction;
+use MrcMorales\Payum\Redsys\Util\TransactionType;
 use Payum\Core\Action\ActionInterface;
 use Payum\Core\Bridge\Spl\ArrayObject;
 use Payum\Core\GatewayAwareTrait;
@@ -17,7 +18,6 @@ class CaptureAction extends BaseApiAwareAction implements ActionInterface, Gener
 {
     use GatewayAwareTrait;
     use GenericTokenFactoryAwareTrait;
-
 
     /** @var Api */
     protected $api;
@@ -51,6 +51,8 @@ class CaptureAction extends BaseApiAwareAction implements ActionInterface, Gener
             'Ds_Merchant_MerchantURL',
         ));
 
+
+
         if (!$postData['Ds_Merchant_UrlOK'] && $request->getToken()) {
             $postData['Ds_Merchant_UrlOK'] = $request->getToken()
                 ->getAfterUrl();
@@ -61,7 +63,7 @@ class CaptureAction extends BaseApiAwareAction implements ActionInterface, Gener
                 ->getAfterUrl();
         }
 
-        $details['Ds_Merchant_TransactionType'] = $this->api::TRANSACTIONTYPE_AUTHORIZATION;
+        $postData['Ds_Merchant_TransactionType'] = TransactionType::AUTHORIZATION;
         $details['Ds_SignatureVersion'] = Api::SIGNATURE_VERSION;
         $details['Ds_MerchantParameters'] = $this->api->createMerchantParameters($postData->toUnsafeArray());
         $details['Ds_Signature'] = $this->api->sign($postData->toUnsafeArray());

@@ -37,7 +37,6 @@ class ConvertPaymentAction extends BaseApiAwareAction implements ActionInterface
             'Ds_Merchant_MerchantCode' => $this->api->getMerchantCode(),
             'Ds_Merchant_Currency' => $this->api->getISO4127($payment->getCurrencyCode()),
             'Ds_Merchant_Terminal' => $this->api->getMerchantTerminalCode(),
-            'Ds_Merchant_TransactionType' => $this->api::TRANSACTIONTYPE_AUTHORIZATION,
         ));
 
         $request->setResult((array)$details);
