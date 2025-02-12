@@ -20,19 +20,14 @@ jobs:
 #          extensions: mbstring, curl, openssl, json
           coverage: none
 
-      - name: Check current working directory
-        run: pwd
-
-      - name: Change directory to root
-        run: cd ..  # Aquest pas canvia a la carpeta pare, on està el fitxer composer.json
-
-      - name: Check current working directory
-        run: pwd
-
       - name: Install dependencies
         run: |
           composer install --no-interaction --prefer-dist
+        working-directory: /home/runner/work/payum-redsys  # Indica el directori correcte
+
 
       - name: Run PHPUnit tests
         run: |
           bin/phpunit
+        working-directory: /home/runner/work/payum-redsys  # Indica el directori correcte
+
