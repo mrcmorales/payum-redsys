@@ -122,14 +122,10 @@ class Api
     public function validateNotificationSignature(array $notification): bool
     {
         $notification = ArrayObject::ensureArrayObject($notification);
-        $notification->validateNotEmpty('Ds_Signature');
-        $notification->validateNotEmpty('Ds_MerchantParameters');
-        $data = $notification["Ds_MerchantParameters"];
+        $notification->validateNotEmpty(['Ds_Signature', 'Ds_MerchantParameters']);
+        $signedResponse = $this->createMerchantSignatureNotify($this->options['secret_key'], $notification["Ds_MerchantParameters"]);
 
-        $key = $this->options['secret_key'];
-        $signedResponse = $this->createMerchantSignatureNotify($key, $data);
-
-        return $signedResponse == $notification['Ds_Signature'];
+        return $signedResponse === $notification['Ds_Signature'];
     }
 
     public function sign(array $params): string
@@ -153,13 +149,10 @@ class Api
         return $this->encodeBase64(json_encode($params));
     }
 
-
-
     private function createMerchantSignatureNotify(string $key, string $data): string
     {
         $key = $this->decodeBase64($key);
-        $decodec = $this->base64_url_decode($data);
-        $orderData = json_decode($decodec, true);
+        $orderData = json_decode($this->base64_url_decode($data), true);
         $key = $this->encrypt_3DES($orderData['Ds_Order'], $key);
         $res = $this->mac256($data, $key);
 

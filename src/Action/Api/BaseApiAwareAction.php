@@ -1,7 +1,6 @@
 <?php
 namespace MrcMorales\Payum\Redsys\Action\Api;
 
-
 use Payum\Core\Action\ActionInterface;
 use Payum\Core\ApiAwareInterface;
 use Payum\Core\ApiAwareTrait;

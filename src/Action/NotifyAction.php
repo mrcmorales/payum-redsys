@@ -23,7 +23,7 @@ class NotifyAction extends BaseApiAwareAction implements ActionInterface
      *
      * @param Notify $request
      */
-    public function execute($request)
+    public function execute($request): void
     {
         RequestNotSupportedException::assertSupports($this, $request);
 
@@ -43,15 +43,12 @@ class NotifyAction extends BaseApiAwareAction implements ActionInterface
             throw new HttpResponse('The notification is invalid', 400);
         }
 
-
         $model->replace(
             ArrayObject::ensureArrayObject(
                 json_decode(base64_decode(strtr($httpRequest->request['Ds_MerchantParameters'], '-_', '+/')))
             )->toUnsafeArray() +
             $httpRequest->request
         );
-
-        $request->setModel($model);
 
         throw new HttpResponse('', 200);
     }

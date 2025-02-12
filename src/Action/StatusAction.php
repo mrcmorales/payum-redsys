@@ -17,8 +17,8 @@ class StatusAction implements ActionInterface
     public function execute($request): void
     {
         RequestNotSupportedException::assertSupports($this, $request);
-
         $model = ArrayObject::ensureArrayObject($request->getModel());
+
 
         if (null == $model['Ds_Response']) {
             $request->markNew();

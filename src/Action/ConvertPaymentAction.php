@@ -22,7 +22,7 @@ class ConvertPaymentAction extends BaseApiAwareAction implements ActionInterface
      *
      * @param Convert $request
      */
-    public function execute($request)
+    public function execute($request): void
     {
         RequestNotSupportedException::assertSupports($this, $request);
 
@@ -44,10 +44,7 @@ class ConvertPaymentAction extends BaseApiAwareAction implements ActionInterface
         $request->setResult((array)$details);
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function supports($request)
+    public function supports($request): bool
     {
         return
             $request instanceof Convert &&
