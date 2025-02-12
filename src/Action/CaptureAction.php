@@ -43,6 +43,8 @@ class CaptureAction extends BaseApiAwareAction implements ActionInterface, Gener
             $postData['Ds_Merchant_MerchantURL'] = $notifyToken->getTargetUrl();
         }
 
+        $postData['Ds_Merchant_TransactionType'] = TransactionType::AUTHORIZATION;
+
         $postData->validatedKeysSet(array(
             'Ds_Merchant_Amount',
             'Ds_Merchant_Order',
@@ -63,7 +65,6 @@ class CaptureAction extends BaseApiAwareAction implements ActionInterface, Gener
                 ->getAfterUrl();
         }
 
-        $postData['Ds_Merchant_TransactionType'] = TransactionType::AUTHORIZATION;
         $details['Ds_SignatureVersion'] = Api::SIGNATURE_VERSION;
         $details['Ds_MerchantParameters'] = $this->api->createMerchantParameters($postData->toUnsafeArray());
         $details['Ds_Signature'] = $this->api->sign($postData->toUnsafeArray());
