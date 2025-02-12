@@ -41,7 +41,6 @@ class RedsysGatewayFactoryTest extends TestCase
         $coreGatewayFactory = $this->createMock(GatewayFactoryInterface::class);
         $factory = new RedsysGatewayFactory([], $coreGatewayFactory);
         $reflection = new \ReflectionProperty(RedsysGatewayFactory::class, 'coreGatewayFactory');
-        $reflection->setAccessible(true);
         $actual = $reflection->getValue($factory);
         $this->assertSame($coreGatewayFactory, $actual);
     }

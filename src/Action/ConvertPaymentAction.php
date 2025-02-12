@@ -40,7 +40,6 @@ class ConvertPaymentAction extends BaseApiAwareAction implements ActionInterface
             'Ds_Merchant_TransactionType' => $this->api::TRANSACTIONTYPE_AUTHORIZATION,
         ));
 
-
         $request->setResult((array)$details);
     }
 

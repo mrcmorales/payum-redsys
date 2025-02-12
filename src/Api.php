@@ -13,7 +13,7 @@ class Api
 {
     const SIGNATURE_VERSION = 'HMAC_SHA256_V1';
     private const ORDER_NUMBER_MINIMUM_LENGTH = 4;
-    private const ORDER_NUMBER_MAXIMUM_LENGTH = 16;
+    private const ORDER_NUMBER_MAXIMUM_LENGTH = 12;
 
     const DS_RESPONSE_CANCELED = '0184';
     const DS_RESPONSE_USER_CANCELED = '9915';
