@@ -3,6 +3,7 @@
 namespace MrcMorales\Payum\Redsys\Tests;
 
 use MrcMorales\Payum\Redsys\Api;
+use Payum\Core\Exception\InvalidArgumentException;
 use Payum\Core\Exception\LogicException;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
@@ -34,14 +35,14 @@ class ApiTest extends TestCase
     #[Test]
     public function throwIfMerchantCodeOptionNotSetInConstructor()
     {
-        $this->expectException(MissingOptionsException::class);
+        $this->expectException(InvalidArgumentException::class);
         new Api(array());
     }
 
     #[Test]
     public function throwIfMerchantCodeOptionIsEmpty()
     {
-        $this->expectException(MissingOptionsException::class);
+        $this->expectException(InvalidArgumentException::class);
         new Api(array(
             'merchant_code' => ''
         ));
@@ -50,7 +51,7 @@ class ApiTest extends TestCase
     #[Test]
     public function throwIfTerminalOptionNotSetInConstructor()
     {
-        $this->expectException(MissingOptionsException::class);
+        $this->expectException(InvalidArgumentException::class);
         new Api(array(
             'merchant_code' => 'a_merchant_code'
         ));
@@ -59,7 +60,7 @@ class ApiTest extends TestCase
     #[Test]
     public function throwIfTerminalOptionIsEmpty()
     {
-        $this->expectException(MissingOptionsException::class);
+        $this->expectException(InvalidArgumentException::class);
         new Api(array(
             'merchant_code' => 'a_merchant_code',
             'terminal' => ''
@@ -69,7 +70,7 @@ class ApiTest extends TestCase
     #[Test]
     public function throwIfSecretKeyOptionNotSetInConstructor()
     {
-        $this->expectException(MissingOptionsException::class);
+        $this->expectException(InvalidArgumentException::class);
 
         new Api(array(
             'merchant_code' => 'a_merchant_code',
@@ -80,7 +81,7 @@ class ApiTest extends TestCase
     #[Test]
     public function throwIfSecretKeyOptionIsEmpty()
     {
-        $this->expectException(MissingOptionsException::class);
+        $this->expectException(InvalidArgumentException::class);
 
         new Api(array(
             'merchant_code' => 'a_merchant_code',
@@ -92,7 +93,7 @@ class ApiTest extends TestCase
     #[Test]
     public function throwIfSandboxOptionIsNotBoolean()
     {
-        $this->expectException(InvalidOptionsException::class);
+        $this->expectException(InvalidArgumentException::class);
 
         new Api(array(
             'merchant_code' => 'a_merchant_code',

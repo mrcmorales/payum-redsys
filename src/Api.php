@@ -5,6 +5,7 @@ namespace MrcMorales\Payum\Redsys;
 use Http\Message\MessageFactory;
 use Payum\Core\Bridge\Spl\ArrayObject;
 use Payum\Core\Exception\Http\HttpException;
+use Payum\Core\Exception\InvalidArgumentException;
 use Payum\Core\Exception\LogicException;
 use Payum\Core\HttpClientInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -44,10 +45,22 @@ class Api
         'TRL' => '949',
     ];
 
-    public function __construct(
-        private array $options,
-    ) {
-        $this->options = $this->resolveOptions($options);
+    public function __construct(private array $options)
+    {
+        $this->options = array_replace($this->options, $options);
+
+        if (true == empty($this->options['merchant_code'])) {
+            throw new InvalidArgumentException('The merchant_code option must be set.');
+        }
+        if (true == empty($this->options['terminal'])) {
+            throw new InvalidArgumentException('The terminal option must be set.');
+        }
+        if (true == empty($this->options['secret_key'])) {
+            throw new InvalidArgumentException('The secret_key option must be set.');
+        }
+        if (false == is_bool($this->options['sandbox'])) {
+            throw new InvalidArgumentException('The boolean sandbox option must be set.');
+        }
     }
 
     public function getApiEndpoint(): string
@@ -157,23 +170,6 @@ class Api
         $res = $this->mac256($data, $key);
 
         return $this->base64_url_encode($res);
-    }
-
-
-    private function resolveOptions(array $options): array
-    {
-        $resolver = new OptionsResolver();
-        $resolver
-            ->setRequired('merchant_code')
-            ->setAllowedTypes('merchant_code', 'string')
-            ->setRequired('terminal')
-            ->setAllowedTypes('terminal', 'string')
-            ->setRequired('secret_key')
-            ->setAllowedTypes('secret_key', 'string')
-            ->setRequired('sandbox')
-            ->setAllowedTypes('sandbox', 'bool');
-
-        return $resolver->resolve($options);
     }
 
     private function encrypt_3DES(string $message, string $key): false|string
