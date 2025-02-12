@@ -20,6 +20,9 @@ jobs:
 #          extensions: mbstring, curl, openssl, json
           coverage: none
 
+      - name: Check current working directory
+        run: pwd
+
       - name: Install dependencies
         run: |
           composer install --no-interaction --prefer-dist
