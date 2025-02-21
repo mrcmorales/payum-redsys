@@ -1,4 +1,5 @@
 <?php
+
 namespace MrcMorales\Payum\Redsys\Action;
 
 use Payum\Core\Action\ActionInterface;
@@ -12,11 +13,9 @@ class RefundAction implements ActionInterface
     use GatewayAwareTrait;
 
     /**
-     * {@inheritDoc}
-     *
      * @param Refund $request
      */
-    public function execute($request)
+    public function execute($request): void
     {
         RequestNotSupportedException::assertSupports($this, $request);
 
@@ -25,14 +24,11 @@ class RefundAction implements ActionInterface
         throw new \LogicException('Not implemented');
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function supports($request)
+    public function supports($request): bool
     {
         return
-            $request instanceof Refund &&
-            $request->getModel() instanceof \ArrayAccess
+            $request instanceof Refund
+            && $request->getModel() instanceof \ArrayAccess
         ;
     }
 }

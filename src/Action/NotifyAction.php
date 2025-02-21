@@ -1,4 +1,5 @@
 <?php
+
 namespace MrcMorales\Payum\Redsys\Action;
 
 use MrcMorales\Payum\Redsys\Action\Api\BaseApiAwareAction;
@@ -19,11 +20,9 @@ class NotifyAction extends BaseApiAwareAction implements ActionInterface
     protected $api;
 
     /**
-     * {@inheritDoc}
-     *
      * @param Notify $request
      */
-    public function execute($request)
+    public function execute($request): void
     {
         RequestNotSupportedException::assertSupports($this, $request);
 
@@ -39,12 +38,11 @@ class NotifyAction extends BaseApiAwareAction implements ActionInterface
             throw new HttpResponse('The notification is invalid', 400);
         }
 
-        if (false == $this->api->validateNotificationSignature($httpRequest->request)) {
+        if (false === $this->api->validateNotificationSignature($httpRequest->request)) {
             throw new HttpResponse('The notification is invalid', 400);
         }
 
-
-        $details->replace(
+        $model->replace(
             ArrayObject::ensureArrayObject(
                 json_decode(base64_decode(strtr($httpRequest->request['Ds_MerchantParameters'], '-_', '+/')))
             )->toUnsafeArray() +
@@ -54,14 +52,11 @@ class NotifyAction extends BaseApiAwareAction implements ActionInterface
         throw new HttpResponse('', 200);
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function supports($request)
+    public function supports($request): bool
     {
         return
-            $request instanceof Notify &&
-            $request->getModel() instanceof \ArrayAccess
+            $request instanceof Notify
+            && $request->getModel() instanceof \ArrayAccess
         ;
     }
 }

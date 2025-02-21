@@ -2,31 +2,25 @@
 
 namespace MrcMorales\Payum\Redsys;
 
-use Http\Message\MessageFactory;
 use Payum\Core\Bridge\Spl\ArrayObject;
-use Payum\Core\Exception\Http\HttpException;
+use Payum\Core\Exception\InvalidArgumentException;
 use Payum\Core\Exception\LogicException;
-use Payum\Core\HttpClientInterface;
-use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class Api
 {
-    const SIGNATURE_VERSION = 'HMAC_SHA256_V1';
+    public const SIGNATURE_VERSION = 'HMAC_SHA256_V1';
     private const ORDER_NUMBER_MINIMUM_LENGTH = 4;
-    private const ORDER_NUMBER_MAXIMUM_LENGTH = 16;
+    private const ORDER_NUMBER_MAXIMUM_LENGTH = 12;
 
-    const DS_RESPONSE_CANCELED = '0184';
-    const DS_RESPONSE_USER_CANCELED = '9915';
-
-    const TRANSACTIONTYPE_AUTHORIZATION = 0;
-
+    public const DS_RESPONSE_CANCELED = '0184';
+    public const DS_RESPONSE_USER_CANCELED = '9915';
 
     /**
      * Currency codes to the values the bank
      * understand. Remember you can only work
-     * with one of them per commerce
+     * with one of them per commerce.
      */
-    protected $currencies = [
+    protected array $currencies = [
         'EUR' => '978',
         'USD' => '840',
         'GBP' => '826',
@@ -44,10 +38,22 @@ class Api
         'TRL' => '949',
     ];
 
-    public function __construct(
-        private array $options,
-    ) {
-        $this->options = $this->resolveOptions($options);
+    public function __construct(private array $options)
+    {
+        $this->options = array_replace($this->options, $options);
+
+        if (true == empty($this->options['merchant_code'])) {
+            throw new InvalidArgumentException('The merchant_code option must be set.');
+        }
+        if (true == empty($this->options['terminal'])) {
+            throw new InvalidArgumentException('The terminal option must be set.');
+        }
+        if (true == empty($this->options['secret_key'])) {
+            throw new InvalidArgumentException('The secret_key option must be set.');
+        }
+        if (false == is_bool($this->options['sandbox'])) {
+            throw new InvalidArgumentException('The boolean sandbox option must be set.');
+        }
     }
 
     public function getApiEndpoint(): string
@@ -59,7 +65,7 @@ class Api
 
     /**
      * Validate the order number passed to the bank. it needs to pass the
-     * following test
+     * following test.
      *
      * - Must be between 4 and 12 characters
      *     - We complete with 0 to the left in case length or the number is lower
@@ -70,17 +76,11 @@ class Api
      *    - between 97 and 122 ( a - z )
      *
      * If the test pass, orderNumber will be returned. if not, a Exception will be thrown
-     *
-     * @param string $orderNumber
-     *
-     * @return string
      */
     public function ensureCorrectOrderNumber(string $orderNumber): string
     {
         if (strlen($orderNumber) > self::ORDER_NUMBER_MAXIMUM_LENGTH) {
-            throw new LogicException(
-                sprintf('Payment number can\'t have more than %d characters', self::ORDER_NUMBER_MAXIMUM_LENGTH)
-            );
+            throw new LogicException(sprintf('Payment number can\'t have more than %d characters', self::ORDER_NUMBER_MAXIMUM_LENGTH));
         }
 
         $normalizedOrderNumber = str_pad(
@@ -111,9 +111,6 @@ class Api
         return $this->options['merchant_code'];
     }
 
-    /**
-     * @return string
-     */
     public function getMerchantTerminalCode(): string
     {
         return $this->options['terminal'];
@@ -122,12 +119,8 @@ class Api
     public function validateNotificationSignature(array $notification): bool
     {
         $notification = ArrayObject::ensureArrayObject($notification);
-        $notification->validateNotEmpty('Ds_Signature');
-        $notification->validateNotEmpty('Ds_MerchantParameters');
-        $signedResponse = $this->createMerchantSignatureNotify(
-            $this->options['secret_key'],
-            $notification["Ds_MerchantParameters"]
-        );
+        $notification->validateNotEmpty(['Ds_Signature', 'Ds_MerchantParameters']);
+        $signedResponse = $this->createMerchantSignatureNotify($this->options['secret_key'], $notification['Ds_MerchantParameters']);
 
         return $signedResponse === $notification['Ds_Signature'];
     }
@@ -152,58 +145,15 @@ class Api
     {
         return $this->encodeBase64(json_encode($params));
     }
-    
-    /**
-     * @param array $fields
-     *
-     * @return array
-     */
-    protected function doRequest($method, array $fields)
-    {
-        $headers = [];
-
-        $request = $this->messageFactory->createRequest(
-            $method,
-            $this->getApiEndpoint(),
-            $headers,
-            http_build_query($fields)
-        );
-
-        $response = $this->client->send($request);
-
-        if (false == ($response->getStatusCode() >= 200 && $response->getStatusCode() < 300)) {
-            throw HttpException::factory($request, $response);
-        }
-
-        return $response;
-    }
 
     private function createMerchantSignatureNotify(string $key, string $data): string
     {
         $key = $this->decodeBase64($key);
-        $decodec = $this->base64_url_decode($data);
-        $orderData = json_decode($decodec, true);
+        $orderData = json_decode($this->base64_url_decode($data), true);
         $key = $this->encrypt_3DES($orderData['Ds_Order'], $key);
         $res = $this->mac256($data, $key);
 
         return $this->base64_url_encode($res);
-    }
-
-
-    private function resolveOptions(array $options): array
-    {
-        $resolver = new OptionsResolver();
-        $resolver
-            ->setRequired('merchant_code')
-            ->setAllowedTypes('merchant_code', 'string')
-            ->setRequired('terminal')
-            ->setAllowedTypes('terminal', 'string')
-            ->setRequired('secret_key')
-            ->setAllowedTypes('secret_key', 'string')
-            ->setRequired('sandbox')
-            ->setAllowedTypes('sandbox', 'bool');
-
-        return $resolver->resolve($options);
     }
 
     private function encrypt_3DES(string $message, string $key): false|string

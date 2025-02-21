@@ -2,21 +2,17 @@
 
 namespace MrcMorales\Payum\Redsys;
 
+use MrcMorales\Payum\Redsys\Action\AuthorizeAction;
+use MrcMorales\Payum\Redsys\Action\CaptureAction;
+use MrcMorales\Payum\Redsys\Action\ConvertPaymentAction;
+use MrcMorales\Payum\Redsys\Action\NotifyAction;
+use MrcMorales\Payum\Redsys\Action\RefundAction;
+use MrcMorales\Payum\Redsys\Action\StatusAction;
 use Payum\Core\Bridge\Spl\ArrayObject;
 use Payum\Core\GatewayFactory;
-use MrcMorales\Payum\Redsys\Action\CaptureAction;
-use MrcMorales\Payum\Redsys\Action\AuthorizeAction;
-use MrcMorales\Payum\Redsys\Action\RefundAction;
-use MrcMorales\Payum\Redsys\Action\CancelAction;
-use MrcMorales\Payum\Redsys\Action\NotifyAction;
-use MrcMorales\Payum\Redsys\Action\StatusAction;
-use MrcMorales\Payum\Redsys\Action\ConvertPaymentAction;
 
 class RedsysGatewayFactory extends GatewayFactory
 {
-    /**
-     * {@inheritDoc}
-     */
     protected function populateConfig(ArrayObject $config)
     {
         $config->defaults([
@@ -24,10 +20,9 @@ class RedsysGatewayFactory extends GatewayFactory
             'payum.factory_title' => 'Redsys',
             'payum.action.capture' => new CaptureAction(),
 
-
-                //TODO
-//            'payum.action.authorize' => new AuthorizeAction(),
-//            'payum.action.refund' => new RefundAction(),
+            // TODO
+            //            'payum.action.authorize' => new AuthorizeAction(),
+            //            'payum.action.refund' => new RefundAction(),
 
             'payum.action.notify' => new NotifyAction(),
             'payum.action.status' => new StatusAction(),
@@ -54,6 +49,5 @@ class RedsysGatewayFactory extends GatewayFactory
 
             return new Api($config);
         };
-        
     }
 }
