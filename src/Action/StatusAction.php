@@ -30,8 +30,7 @@ class StatusAction implements ActionInterface
             return;
         }
 
-        if (in_array($model['Ds_Response'],
-            [Api::DS_RESPONSE_CANCELED, Api::DS_RESPONSE_USER_CANCELED])) {
+        if (in_array($model['Ds_Response'], [Api::DS_RESPONSE_CANCELED, Api::DS_RESPONSE_USER_CANCELED])) {
             $request->markCanceled();
 
             return;
@@ -39,6 +38,12 @@ class StatusAction implements ActionInterface
 
         if (0 <= $model['Ds_Response'] && 99 >= $model['Ds_Response']) {
             $request->markCaptured();
+
+            return;
+        }
+
+        if (Api::DS_RESPONSE_TRANSACTION_AUTHORIZED === $model['Ds_Response'] && '3'=== $model['Ds_TransactionType']) {
+            $request->markRefunded();
 
             return;
         }

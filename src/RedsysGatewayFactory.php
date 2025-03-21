@@ -22,8 +22,7 @@ class RedsysGatewayFactory extends GatewayFactory
 
             // TODO
             //            'payum.action.authorize' => new AuthorizeAction(),
-            //            'payum.action.refund' => new RefundAction(),
-
+          'payum.action.refund' => new RefundAction(),
             'payum.action.notify' => new NotifyAction(),
             'payum.action.status' => new StatusAction(),
             'payum.action.convert_payment' => new ConvertPaymentAction(),

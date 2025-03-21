@@ -14,6 +14,7 @@ class Api
 
     public const DS_RESPONSE_CANCELED = '0184';
     public const DS_RESPONSE_USER_CANCELED = '9915';
+    public const DS_RESPONSE_TRANSACTION_AUTHORIZED = '0900';
 
     /**
      * Currency codes to the values the bank
@@ -61,6 +62,13 @@ class Api
         return $this->options['sandbox'] ?
             'https://sis-t.redsys.es:25443/sis/realizarPago' :
             'https://sis.redsys.es/sis/realizarPago';
+    }
+
+    public function getRestEndpoint(): string
+    {
+        return $this->options['sandbox'] ?
+            'https://sis-t.redsys.es:25443/sis/rest/trataPeticionREST' :
+            'https://sis.redsys.es/sis/rest/trataPeticionREST';
     }
 
     /**
@@ -116,7 +124,7 @@ class Api
         return $this->options['terminal'];
     }
 
-    public function validateNotificationSignature(array $notification): bool
+    public function validateSignature(array $notification): bool
     {
         $notification = ArrayObject::ensureArrayObject($notification);
         $notification->validateNotEmpty(['Ds_Signature', 'Ds_MerchantParameters']);
@@ -143,12 +151,12 @@ class Api
 
     public function createMerchantParameters(array $params): string
     {
-        return $this->encodeBase64(json_encode($params));
+        return base64_encode(json_encode($params));
     }
 
     private function createMerchantSignatureNotify(string $key, string $data): string
     {
-        $key = $this->decodeBase64($key);
+        $key = base64_decode($key);
         $orderData = json_decode($this->base64_url_decode($data), true);
         $key = $this->encrypt_3DES($orderData['Ds_Order'], $key);
         $res = $this->mac256($data, $key);
@@ -178,19 +186,9 @@ class Api
         return strtr(base64_encode($input), '+/', '-_');
     }
 
-    private function encodeBase64(string $data): string
-    {
-        return base64_encode($data);
-    }
-
     private function base64_url_decode(string $input): string
     {
         return base64_decode(strtr($input, '-_', '+/'));
-    }
-
-    private function decodeBase64($data): string
-    {
-        return base64_decode($data);
     }
 
     private function mac256($ent, $key): string

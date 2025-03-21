@@ -38,7 +38,7 @@ class NotifyAction extends BaseApiAwareAction implements ActionInterface
             throw new HttpResponse('The notification is invalid', 400);
         }
 
-        if (false === $this->api->validateNotificationSignature($httpRequest->request)) {
+        if (false === $this->api->validateSignature($httpRequest->request)) {
             throw new HttpResponse('The notification is invalid', 400);
         }
 
